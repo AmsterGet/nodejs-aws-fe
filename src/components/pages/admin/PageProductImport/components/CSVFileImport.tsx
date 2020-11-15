@@ -15,14 +15,18 @@ type CSVFileImportProps = {
   title: string
 };
 
+const ACCEPTED_FILE_TYPE = 'text/csv';
+
 export default function CSVFileImport({url, title}: CSVFileImportProps) {
   const classes = useStyles();
   const [file, setFile] = useState<any>();
 
   const onFileChange = (e: any) => {
     console.log(e);
-    let files = e.target.files || e.dataTransfer.files
-    if (!files.length) return
+    let files = e.target.files || e.dataTransfer.files;
+    if (!files.length) {
+        return;
+    }
     setFile(files.item(0));
   };
 
@@ -38,14 +42,17 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
         params: {
           name: encodeURIComponent(file.name)
         }
-      })
-      console.log('File to upload: ', file.name)
-      console.log('Uploading to: ', response.data)
+      });
+      console.log('File to upload: ', file.name);
+      console.log('Uploading to: ', response.data);
       const result = await fetch(response.data, {
         method: 'PUT',
-        body: file
-      })
-      console.log('Result: ', result)
+        headers: {
+          'Content-Type': ACCEPTED_FILE_TYPE,
+        },
+        body: file,
+      });
+      console.log('Result: ', result);
       setFile('');
     }
   ;
@@ -56,7 +63,7 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
         {title}
       </Typography>
       {!file ? (
-          <input type="file" onChange={onFileChange}/>
+          <input type="file" onChange={onFileChange} accept={ACCEPTED_FILE_TYPE} />
       ) : (
         <div>
           <button onClick={removeFile}>Remove file</button>
